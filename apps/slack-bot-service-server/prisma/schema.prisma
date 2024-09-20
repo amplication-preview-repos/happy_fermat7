@@ -1,0 +1,61 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Message {
+  botUser   BotUser?  @relation(fields: [botUserId], references: [id])
+  botUserId String?   @db.ObjectId
+  channel   Channel?  @relation(fields: [channelId], references: [id])
+  channelId String?   @db.ObjectId
+  createdAt DateTime  @default(now())
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  text      String?
+  timestamp DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model BotUser {
+  createdAt DateTime  @default(now())
+  email     String?
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  isBot     Boolean?
+  messages  Message[]
+  slackId   String?
+  updatedAt DateTime  @updatedAt
+  username  String?
+}
+
+model Command {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String?
+  trigger     String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Channel {
+  createdAt DateTime  @default(now())
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  messages  Message[]
+  name      String?
+  slackId   String?
+  updatedAt DateTime  @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
